@@ -36,8 +36,13 @@ public class KMeans {
 	 */
 	private static ArrayList<ArrayList<Double>>allMatrix=new ArrayList<ArrayList<Double>>();
 	
-	
+	/**
+	 * 每个类的帖子数
+	 */
 	private static ArrayList<Integer>classAricleNum=new ArrayList<Integer>();
+	
+	
+	
 	/**
 	 * @description 获得整个样本的特征向量
 	 * @return Map<String,ArrayList<ArrayList<Double>>>allVector
@@ -236,6 +241,7 @@ public class KMeans {
 		
 		getAllMatrix();
 		process();
+		
 
 	}
 

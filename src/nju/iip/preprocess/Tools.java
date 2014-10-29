@@ -20,12 +20,15 @@ import java.util.Set;
  *
  */
 public class Tools {
-	  private static final List<String> FileList =new ArrayList<String>();
+	
+	private static int keyWordsNum=1000;//特征词个数
+	
+	private static final List<String> FileList =new ArrayList<String>();
 	  
-	  /**
-		 * 特征向量所包含的关键词Map（每类中取tf*idf前100大的）
-		 */	
-		private static Map<String,Double> keywordsMap=new LinkedHashMap<String,Double>();
+	/**
+	 * 特征向量所包含的关键词Map（每类中取tf*idf前100大的）
+	 */	 
+	private static Map<String,Double> keywordsMap=new LinkedHashMap<String,Double>();
 
 	//get list of file for the directory, including sub-directory of it
     public static List<String> readDirs(String filepath) throws FileNotFoundException, IOException
@@ -116,8 +119,9 @@ public class Tools {
 	 */
 	public static Double vectorDistance(ArrayList<Double>x,ArrayList<Double>y){
 		Double value=0.0;
-		for(int i=0;i<x.size()-1;i++){
-			value=value+(x.get(i)-y.get(i))*(x.get(i)-y.get(i));
+		for(int i=0;i<keyWordsNum;i++){
+			Double temp=x.get(i)-y.get(i);
+			value=value+temp*temp;
 		}
 		return Math.sqrt(value);
 
@@ -131,7 +135,7 @@ public class Tools {
 	 */
 	public static Double vectorProduct(ArrayList<Double>x,ArrayList<Double>y){
 		Double value=0.0;
-		for(int i=0;i<x.size()-1;i++){
+		for(int i=0;i<keyWordsNum;i++){
 			value=value+y.get(i)*x.get(i);
 		}
 		return value;
@@ -149,17 +153,20 @@ public class Tools {
 		Double r1=vectorProduct(x,y);
 		Double r2=0.0;
 		Double r3=0.0;
-		for(int i=0;i<x.size()-1;i++){
-			r2=r2+x.get(i)*x.get(i);
-			r3=r3+y.get(i)*y.get(i);
+		for(int i=0;i<keyWordsNum;i++){
+			Double a=x.get(i);
+			Double b=y.get(i);
+			r2=r2+a*a;
+			r3=r3+b*b;
 		}
+		
 		return r1/(Math.sqrt(r2)*Math.sqrt(r3));
 	}
 	
 	
 	
 	/**
-	 * @Description: 返回特征向量词的map<word,idf>，800个词
+	 * @Description: 返回特征向量词的map<word,idf>，1000个词
 	 * @return keywordsMap
 	 * @throws IOException
 	 */
@@ -209,7 +216,24 @@ public class Tools {
 	}
 	
 	
-
+	
+	/**
+	 * @description 判断一个向量是否为0向量
+	 * @return false:不是零向量，true：是零向量
+	 */
+    public static Boolean IsZeroVector(ArrayList<Double> vector){
+    	Boolean result=true;
+    	for(int i=0;i<keyWordsNum;i++){
+    		if(vector.get(i)!=0){
+    			result=false;
+    		}
+    	}
+    	return result;
+    }
+	
+	
+	
+	
 	/**
 	 * @description 计算并获得某一类所有帖子的特征向量
 	 * @param classification(某一类txt文件的路径)
@@ -223,7 +247,9 @@ public class Tools {
         String line = br.readLine();
         while(line != null){  
         	ArrayList<Double>Vector=getOneArticleVector(line,ID);
-        	classVector.add(Vector);
+        	if(!IsZeroVector(Vector)){
+        		classVector.add(Vector);
+        	}
         	line = br.readLine();       	
         }
         br.close();
