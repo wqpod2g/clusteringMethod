@@ -75,11 +75,6 @@ public class ClusterByFindDensityPeaks {
 				}
 			}
 			allMatrix.get(i).add(n);
-			System.out.println(n);
-//			if(n>=126&&count<10){
-//				meanVectors.add(allMatrix.get(i));
-//				count++;
-//			}
 		}
 		System.out.println("每个点的密度计算完毕！");
 	}
@@ -90,11 +85,11 @@ public class ClusterByFindDensityPeaks {
 	 */
 	public static void getDelta(){
 		for(int i=0;i<allMatrix.size();i++){
-			if(allMatrix.get(i).get(keyWordsNum+1)==141){
-				Double dis=1.0;
+			if(allMatrix.get(i).get(keyWordsNum+1)==233){
+				Double dis=0.0;
 				for(int j=0;j<allMatrix.size();j++){
-					Double temp=Tools.vectorCosTheta(allMatrix.get(i),allMatrix.get(j));
-					if(temp<dis){
+					Double temp=1-Tools.vectorCosTheta(allMatrix.get(i),allMatrix.get(j));
+					if(temp>dis){
 						dis=temp;
 					}
 				}
@@ -102,11 +97,11 @@ public class ClusterByFindDensityPeaks {
 			}
 			
 			else{
-				Double dis=0.0;
+				Double dis=1.0;
 				for(int j=0;j<allMatrix.size();j++){
 					if(allMatrix.get(j).get(keyWordsNum+1)>allMatrix.get(i).get(keyWordsNum+1)){
-						Double temp=Tools.vectorCosTheta(allMatrix.get(i),allMatrix.get(j));
-						if(temp>dis){
+						Double temp=1-Tools.vectorCosTheta(allMatrix.get(i),allMatrix.get(j));
+						if(temp<dis){
 							dis=temp;
 						}
 					}
@@ -121,12 +116,15 @@ public class ClusterByFindDensityPeaks {
 	
 	
 	/**
-	 * @description 计算Delta前10大的点
+	 * @description 计算rho和theta前10大的点
 	 */
-	public static void getMaxDeltaVector(){
+	public static void getMeanVector(){
+		System.out.println("10个中心点为:");
 		for(int i=0;i<allMatrix.size();i++){
-			if(allMatrix.get(i).get(keyWordsNum+1)>=130&&allMatrix.get(i).get(keyWordsNum+2)<0.40){
+			if(allMatrix.get(i).get(keyWordsNum+1)>=130&&allMatrix.get(i).get(keyWordsNum+2)>0.60&&allMatrix.get(i).get(keyWordsNum+2)!=0.6176404435490638){
+				
 				System.out.println("rho="+allMatrix.get(i).get(keyWordsNum+1)+"  theta="+allMatrix.get(i).get(keyWordsNum+2));
+				meanVectors.add(allMatrix.get(i));
 			}
 		}
 	}
@@ -141,7 +139,7 @@ public class ClusterByFindDensityPeaks {
 	public static int getClosestMeanNum(ArrayList<Double>x){
 		int result=0;
 		Double temp=Tools.vectorCosTheta(x, meanVectors.get(0));
-		for(int i=1;i<=9;i++){
+		for(int i=1;i<10;i++){
 			Double costheta=Tools.vectorCosTheta(x, meanVectors.get(i));
 			if(costheta>temp){
 				temp=costheta;
@@ -156,7 +154,6 @@ public class ClusterByFindDensityPeaks {
 	 * @return
 	 */
 	public static HashMap<Integer,ArrayList<ArrayList<Double>>>initializeClusterMap(){
-		clusterMap.clear();
 		for(int i=0;i<10;i++){
 			ArrayList<ArrayList<Double>>list=new ArrayList<ArrayList<Double>>();
 			clusterMap.put(i, list);
@@ -260,9 +257,10 @@ public class ClusterByFindDensityPeaks {
 	 * @description 整个处理过程
 	 */
 	public static void process(){
-		//meanVectors=getCenterVectors();
 		initializeClusterMap();
 		getDensity();
+		getDelta();
+		getMeanVector();
 		clusterMap=getClusterMap();
 		System.out.println("ClusterByFindDensityPeaks的NMI值为:"+getNMI());
 	}
@@ -271,15 +269,8 @@ public class ClusterByFindDensityPeaks {
 	public static void main(String[] args) throws FileNotFoundException, IOException{
 		
 		getAllMatrix();
-		getDensity();
-		getDelta();
-		getMaxDeltaVector();
-		//process();
-//		
-//		for(int i=0;i<allMatrix.size();i++){
-//			System.out.println(Tools.vectorCosTheta(allMatrix.get(i),allMatrix.get(i)));
-//		}
-
+		process();
+		
 	}
 
 }
