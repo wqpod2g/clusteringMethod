@@ -3,8 +3,10 @@ package nju.iip.clustering;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+
 import nju.iip.preprocess.Tools;
 
 /**
@@ -15,7 +17,7 @@ import nju.iip.preprocess.Tools;
  */
 public class ClusterByFindDensityPeaks {
 	
-	private static Double dc=0.2;//截断距离dc
+	private static Double dc=0.1;//截断距离dc
 	
 	private static String SamplePath="lily";//文本路径
 	
@@ -120,9 +122,18 @@ public class ClusterByFindDensityPeaks {
 	 */
 	public static void getMeanVector(){
 		System.out.println("10个中心点为:");
+		ArrayList<Double>list=new ArrayList<Double>();
 		for(int i=0;i<allMatrix.size();i++){
-			if(allMatrix.get(i).get(keyWordsNum+1)>=130&&allMatrix.get(i).get(keyWordsNum+2)>0.60&&allMatrix.get(i).get(keyWordsNum+2)!=0.6176404435490638){
-				
+//			if(allMatrix.get(i).get(keyWordsNum+1)>=130&&allMatrix.get(i).get(keyWordsNum+2)>0.60&&allMatrix.get(i).get(keyWordsNum+2)!=0.6176404435490638){
+//				
+//				System.out.println("rho="+allMatrix.get(i).get(keyWordsNum+1)+"  theta="+allMatrix.get(i).get(keyWordsNum+2));
+//				meanVectors.add(allMatrix.get(i));
+//			}
+			list.add(allMatrix.get(i).get(keyWordsNum+1)*allMatrix.get(i).get(keyWordsNum+2));
+		}
+		Collections.sort(list);
+		for(int i=0;i<allMatrix.size();i++){
+			if(allMatrix.get(i).get(keyWordsNum+1)*allMatrix.get(i).get(keyWordsNum+2)>=list.get(list.size()-10)){
 				System.out.println("rho="+allMatrix.get(i).get(keyWordsNum+1)+"  theta="+allMatrix.get(i).get(keyWordsNum+2));
 				meanVectors.add(allMatrix.get(i));
 			}
